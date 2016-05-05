@@ -1,10 +1,8 @@
 FROM kibana:4.5
 
-RUN apt-get update && apt-get install -y netcat
-
-COPY entrypoint.sh /tmp/entrypoint.sh
-RUN chmod +x /tmp/entrypoint.sh
-
+RUN apt-get update
 RUN kibana plugin --install elastic/sense
 
-CMD ["/tmp/entrypoint.sh"]
+ENV ELASTICSEARCH_ENDPOINT http://elasticsearch:9200
+
+ENTRYPOINT ["/bin/bash", "-c", "kibana --elasticsearch $ELASTICSEARCH_ENDPOINT"]

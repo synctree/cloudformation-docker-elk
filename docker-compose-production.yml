@@ -1,23 +1,17 @@
-elasticsearch:
-  image: elasticsearch:2.3
-  command: elasticsearch -Des.network.host=0.0.0.0
-  ports:
-    - "9200:9200"
-    - "9300:9300"
 logstash:
   image: logstash:2.3
-  command: logstash -f /etc/logstash/conf.d/ --verbose
+  command: logstash -f /etc/logstash/conf.d/ --allow-env --verbose
   volumes:
     - ./logstash/config:/etc/logstash/conf.d
+  environment:
+    ELASTICSEARCH_ENDPOINT: ${ELASTICSEARCH_ENDPOINT}
   ports:
     - "5000:5000"
-  links:
-    - elasticsearch
 kibana:
   build: kibana/
   volumes:
     - ./kibana/config/:/opt/kibana/config/
   ports:
     - "5601:5601"
-  links:
-    - elasticsearch
+  environment:
+    ELASTICSEARCH_ENDPOINT: ${ELASTICSEARCH_ENDPOINT}
