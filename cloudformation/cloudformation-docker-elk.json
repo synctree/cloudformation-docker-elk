@@ -237,7 +237,8 @@
                 "Action": [ "es:*" ],
                 "Resource": [
                   { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "/*" ]]},
-                  { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "/" ]]}
+                  { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "/" ]]},
+                  { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "" ]]}
                 ]
               }
             ]

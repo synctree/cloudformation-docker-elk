@@ -22,7 +22,7 @@ read -r -d '' POLICY <<EOF
           ]
         }
       },
-      "Resource": "$ELASTICSEARCH_ARN/*"
+      "Resource": ["$ELASTICSEARCH_ARN/*", "$ELASTICSEARCH_ARN/", "$ELASTICSEARCH_ARN"]
     }
   ]
 }
