@@ -6,7 +6,7 @@ elasticsearch:
     - "9300:9300"
 logstash:
   image: logstash:2.3
-  command: logstash -f /etc/logstash/conf.d/logstash.conf
+  command: logstash -f /etc/logstash/conf.d/ --verbose
   volumes:
     - ./logstash/config:/etc/logstash/conf.d
   ports:
