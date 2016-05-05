@@ -192,6 +192,8 @@
                   "&& /bin/bash ./cloudformation/deploy.sh"
                 ]]},
                 "env": {
+                  "ELASTICSEARCH_ARN": { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] },
+                  "ELASTICSEARCH_DOMAIN_NAME": { "Ref": "DockerElkElasticsearchDomain" },
                   "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ "", [ "http://", { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }]]},
                   "S3_BUCKET": { "Ref": "S3Bucket" },
                   "DD_API_KEY": { "Ref": "DatadogAPIKey" },
