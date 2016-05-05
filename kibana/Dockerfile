@@ -1,7 +1,6 @@
-FROM kibana:4.5
+FROM kibana:4.1
 
 RUN apt-get update
-RUN kibana plugin --install elastic/sense
 
 ENV ELASTICSEARCH_ENDPOINT http://elasticsearch:9200
 

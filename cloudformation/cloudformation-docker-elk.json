@@ -187,12 +187,12 @@
               "deploy-docker-elk": {
                 "cwd": "/opt/docker-elk/",
                 "command": { "Fn::Join": [ " ", [
-                  "git reset --hard HEAD && git fetch -a && git pull && git checkout",
+                  "git reset --hard HEAD && git clean -df && git fetch -a && git pull && git checkout",
                   { "Ref": "GitRef" },
                   "&& /bin/bash ./cloudformation/deploy.sh"
                 ]]},
                 "env": {
-                  "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ ":", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }, "9200"]]},
+                  "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ "", [ "http://", { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }]]},
                   "S3_BUCKET": { "Ref": "S3Bucket" },
                   "DD_API_KEY": { "Ref": "DatadogAPIKey" },
                   "REGION": { "Ref" : "AWS::Region" }
@@ -233,10 +233,10 @@
               {
                 "Effect": "Allow",
                 "Action": [ "es:*" ],
-                "Resource": { "Fn::Join" : [ "", [
-                  { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] },
-                  "/*"
-                ]]}
+                "Resource": [
+                  { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "/*" ]]},
+                  { "Fn::Join" : [ "", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] }, "/" ]]}
+                ]
               }
             ]
           }

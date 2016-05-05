@@ -1,5 +1,5 @@
 elasticsearch:
-  image: elasticsearch:2.3
+  image: elasticsearch:1.5
   command: elasticsearch -Des.network.host=0.0.0.0
   ports:
     - "9200:9200"

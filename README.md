@@ -175,3 +175,7 @@ elasticsearch:
 ```
 
 This will store elasticsearch data inside `/path/to/storage`.
+
+# Post CF Setup
+
+The Elasticsearch cluster must be manually updated after provisioning to allow the kibana instance to access it. Apply an IP based access policy with the public IP of the kibana/logstash instance.
