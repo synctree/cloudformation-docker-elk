@@ -3,10 +3,6 @@
     "InstanceType":       { "Type": "String", "Default": "t2.small" },
     "ElasticsearchInstanceType":       { "Type": "String", "Default": "t2.small.elasticsearch" },
     "KeyName":            { "Type": "String", "Default": ""  },
-    "SubnetId":           { "Type": "String" },
-    "VpcId":              { "Type": "String" },
-    "IngestCidr":         { "Type": "String", "Default": "0.0.0.0/0"},
-    "S3Bucket":           { "Type": "String", "Default": "my-logstash-bucket"},
     "DatadogAPIKey":      { "Type": "String", "Default": ""},
     "InstanceVolumeSize": { "Type": "String", "Default": "10" },
     "InstanceVolumeType": { "Type": "String", "Default": "gp2"},
@@ -37,7 +33,6 @@
     "DockerElkSecurityGroup": {
       "Type" : "AWS::EC2::SecurityGroup",
       "Properties" : {
-         "VpcId": { "Ref": "VpcId" },
          "GroupDescription" : "Created by docker-elk CloudFormation",
          "SecurityGroupIngress" : [
            {
@@ -45,18 +40,6 @@
               "FromPort" : "22",
               "ToPort" : "22",
               "CidrIp" : "0.0.0.0/0"
-           },
-           {
-              "IpProtocol" : "tcp",
-              "FromPort" : "25",
-              "ToPort" : "25",
-              "CidrIp" : "0.0.0.0/0"
-           },
-           {
-              "IpProtocol" : "tcp",
-              "FromPort" : "5000",
-              "ToPort" : "5000",
-              "CidrIp" : { "Ref": "IngestCidr" }
            }
          ]
       }
@@ -65,7 +48,6 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": { "Ref": "InstanceType" },
-        "SubnetId": { "Ref": "SubnetId" },
         "ImageId": {
           "Fn::FindInMap": [ "RegionArchMap", { "Ref": "AWS::Region" }, {
             "Fn::FindInMap": [ "InstanceTypeArchMap", { "Ref": "InstanceType"}, "Arch" ]}]},
@@ -201,10 +183,9 @@
                   "&& /bin/bash ./cloudformation/deploy.sh"
                 ]]},
                 "env": {
-                  "ELASTICSEARCH_ENDPOINT": { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] },
+                  "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ ":", [{ "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }, "9200"]]},
                   "DD_API_KEY": { "Ref": "DatadogAPIKey" },
-                  "REGION": { "Ref" : "AWS::Region" },
-                  "S3_BUCKET": { "Ref": "S3Bucket" }
+                  "REGION": { "Ref" : "AWS::Region" }
                 }
               }
             }
@@ -227,18 +208,14 @@
           } ]
         },
         "Policies": [ {
-          "PolicyName": "AttributionRunnerPolicy",
+          "PolicyName": "DockerElkPolicy",
           "PolicyDocument": {
             "Version": "2012-10-17",
             "Statement": [
               {
                 "Effect": "Allow",
                 "Action": [ "s3:Get*", "s3:List*" ],
-                "Resource": { "Fn::Join" : [ "", [
-                  "arn:aws:s3:::",
-                  { "Ref": "S3Bucket" },
-                  "/*"
-                ]]}
+                "Resource": "arn:aws:s3:::*/*"
               },
               {
                 "Effect": "Allow",
@@ -261,15 +238,6 @@
         "Path": "/",
         "Roles": [ { "Ref": "DockerElkRole" } ]
       }
-    },
-
-    "DockerElkBucket" : {
-      "Type" : "AWS::S3::Bucket",
-      "Properties" : {
-        "AccessControl" : "Private",
-        "BucketName" : { "Ref": "S3Bucket" }
-      },
-      "DeletionPolicy" : "Retain"
     }
   }
 }
