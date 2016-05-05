@@ -7,4 +7,4 @@ aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/conf
 # bounce docker containers
 docker-compose -f docker-compose-production.yml pull
 docker-compose -f docker-compose-production.yml down
-docker-compose -f docker-compose-production.yml up -d
+docker-compose -f docker-compose-production.yml up --build -d
