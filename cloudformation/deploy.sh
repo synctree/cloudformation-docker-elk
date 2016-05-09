@@ -1,8 +1,12 @@
 #!/bin/bash
 set -x
 
+function elasticsearch_is_unreachable() {
+  curl "$ELASTICSEARCH_ENDPOINT" | grep 'not authorized'
+}
+
 # try curling the endpoint, if it fails we assume that the access policy needs updating
-if curl http://search-docker-elk-l36mttokyybzicxf5p23dxb234.us-east-1.es.amazonaws.com | grep 'not authorized' ; then
+if elasticsearch_is_unreachable ; then
 
 read -r -d '' POLICY <<EOF
 {
@@ -31,6 +35,11 @@ EOF
   aws --region "$REGION" es update-elasticsearch-domain-config \
     --domain-name "$ELASTICSEARCH_DOMAIN_NAME" \
     --access-policies "$POLICY"
+
+  # now we need to wait for about 10 minutes while the cluster is updated
+  while elasticsearch_is_unreachable ; do
+    sleep 60
+  done
 fi
 
 # sync logstash config bucket
