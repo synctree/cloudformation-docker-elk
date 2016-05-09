@@ -1,9 +1,11 @@
 {
   "Parameters": {
     "InstanceType":       { "Type": "String", "Default": "t2.small" },
+    "KibanaSecurityGroup":{ "Type": "String" },
     "ElasticsearchInstanceType":       { "Type": "String", "Default": "t2.small.elasticsearch" },
     "KeyName":            { "Type": "String", "Default": ""  },
     "S3Bucket":           { "Type": "String", "Default": "my-logstash-bucket"},
+    "S3ReadableBucketPattern":           { "Type": "String", "Default": "*"},
     "DatadogAPIKey":      { "Type": "String", "Default": ""},
     "InstanceVolumeSize": { "Type": "String", "Default": "10" },
     "InstanceVolumeType": { "Type": "String", "Default": "gp2"},
@@ -38,32 +40,16 @@
         }
       }
     },
-    "DockerElkSecurityGroup": {
-      "Type" : "AWS::EC2::SecurityGroup",
-      "Properties" : {
-         "GroupDescription" : "Created by docker-elk CloudFormation",
-         "SecurityGroupIngress" : [
-           {
-              "IpProtocol" : "tcp",
-              "FromPort" : "22",
-              "ToPort" : "22",
-              "CidrIp" : "0.0.0.0/0"
-           }
-         ]
-      }
-    },
     "DockerElkInstance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "InstanceType": { "Ref": "InstanceType" },
+        "SecurityGroupIds": [{ "Ref": "KibanaSecurityGroup" }],
         "ImageId": {
           "Fn::FindInMap": [ "RegionArchMap", { "Ref": "AWS::Region" }, {
             "Fn::FindInMap": [ "InstanceTypeArchMap", { "Ref": "InstanceType"}, "Arch" ]}]},
         "KeyName":            { "Ref": "KeyName" },
         "IamInstanceProfile": { "Ref": "DockerElkInstanceProfile" },
-        "SecurityGroupIds": [
-          { "Fn::GetAtt": [ "DockerElkSecurityGroup", "GroupId" ] }
-        ],
         "BlockDeviceMappings" : [
           {
             "DeviceName" : "/dev/sda1",
@@ -228,8 +214,8 @@
                 "Effect": "Allow",
                 "Action": [ "s3:Get*", "s3:List*" ],
                 "Resource": [
-                  { "Fn::Join" : [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" } ]]},
-                  { "Fn::Join" : [ "", ["arn:aws:s3:::", { "Ref": "S3Bucket" }, "/*" ]]}
+                  { "Fn::Join" : [ "", ["arn:aws:s3:::", { "Ref": "S3ReadableBucketPattern" } ]]},
+                  { "Fn::Join" : [ "", ["arn:aws:s3:::", { "Ref": "S3ReadableBucketPattern" }, "/*" ]]}
                 ]
               },
               {
