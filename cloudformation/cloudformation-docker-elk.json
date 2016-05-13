@@ -2,6 +2,8 @@
   "Parameters": {
     "InstanceType":       { "Type": "String", "Default": "t2.small" },
     "KibanaSecurityGroup":{ "Type": "String" },
+    "Route53Zone":{ "Type": "String" },
+    "Subdomain": { "Type": "String", "Default": "elk" },
     "ElasticsearchInstanceType":       { "Type": "String", "Default": "t2.small.elasticsearch" },
     "KeyName":            { "Type": "String", "Default": ""  },
     "S3Bucket":           { "Type": "String", "Default": "my-logstash-bucket"},
@@ -247,6 +249,28 @@
       "Properties" : {
         "AccessControl" : "Private",
         "BucketName" : { "Ref": "S3Bucket" }
+      }
+    },
+
+    "DockerElkExternalDNSRecord": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+         "HostedZoneName" : {
+            "Fn::Join" : [ "", [
+               { "Ref" : "Route53Zone" }, "."
+            ] ]
+         },
+         "Name" : {
+            "Fn::Join" : [ "", [
+               {"Ref" : "Subdomain"}, ".",
+               {"Ref" : "Route53Zone"} ,"."
+            ] ]
+         },
+         "Type" : "A",
+         "TTL" : "900",
+         "ResourceRecords" : [
+            { "Fn::GetAtt" : [ "DockerElkInstance", "PublicIp" ] }
+         ]
       }
     }
   }
