@@ -12,6 +12,6 @@ kibana:
   volumes:
     - ./kibana/config/:/opt/kibana/config/
   ports:
-    - "5601:5601"
+    - "80:5601"
   environment:
     ELASTICSEARCH_ENDPOINT: ${ELASTICSEARCH_ENDPOINT}

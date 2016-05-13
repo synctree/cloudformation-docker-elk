@@ -165,7 +165,7 @@
               },
               "01clone-docker-elk": {
                 "cwd": "/",
-                "command": "git clone https://github.com/bkconrad/docker-elk.git /opt/docker-elk"
+                "command": "git clone https://github.com/synctree/cloudformation-docker-elk.git /opt/docker-elk"
               }
             }
           },
