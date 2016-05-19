@@ -1,8 +1,7 @@
 logstash:
   image: logstash:2.3
   command: logstash -f /etc/logstash/conf.d/ --allow-env --verbose
-  logging:
-    driver: syslog
+  log_driver: syslog
   volumes:
     - ./logstash/config:/etc/logstash/conf.d
   environment:
@@ -11,8 +10,7 @@ logstash:
     - "5000:5000"
 kibana:
   build: kibana/
-  logging:
-    driver: syslog
+  log_driver: syslog
   volumes:
     - ./kibana/config/:/opt/kibana/config/
   ports:
