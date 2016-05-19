@@ -8,6 +8,8 @@ logstash:
     ELASTICSEARCH_ENDPOINT: ${ELASTICSEARCH_ENDPOINT}
   ports:
     - "5000:5000"
+  ports:
+    - "5044:5044"
 kibana:
   build: kibana/
   log_driver: syslog
