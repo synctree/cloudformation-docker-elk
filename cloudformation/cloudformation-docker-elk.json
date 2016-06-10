@@ -272,6 +272,28 @@
             { "Fn::GetAtt" : [ "DockerElkInstance", "PublicIp" ] }
          ]
       }
+    },
+
+    "DockerElkInternalDNSRecord": {
+      "Type" : "AWS::Route53::RecordSet",
+      "Properties" : {
+         "HostedZoneName" : {
+            "Fn::Join" : [ "", [
+               { "Ref" : "Route53Zone" }, "."
+            ] ]
+         },
+         "Name" : {
+            "Fn::Join" : [ "", [
+               {"Ref" : "Subdomain"}, "-internal.",
+               {"Ref" : "Route53Zone"} ,"."
+            ] ]
+         },
+         "Type" : "A",
+         "TTL" : "900",
+         "ResourceRecords" : [
+            { "Fn::GetAtt" : [ "DockerElkInstance", "PrivateIp" ] }
+         ]
+      }
     }
   }
 }
