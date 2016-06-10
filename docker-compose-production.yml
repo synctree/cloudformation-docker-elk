@@ -1,6 +1,6 @@
 logstash:
   image: logstash:2.3
-  command: logstash -f /etc/logstash/conf.d/ --allow-env
+  command: logstash -f /etc/logstash/conf.d/ --allow-env --verbose
   log_driver: syslog
   volumes:
     - ./logstash/config:/etc/logstash/conf.d
