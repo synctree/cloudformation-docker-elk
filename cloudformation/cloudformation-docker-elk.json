@@ -190,6 +190,7 @@
                   "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ "", [ "http://", { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }]]},
                   "S3_BUCKET": { "Ref": "S3Bucket" },
                   "DD_API_KEY": { "Ref": "DatadogAPIKey" },
+                  "STACK_NAME": { "Ref": "AWS::StackName" },
                   "REGION": { "Ref" : "AWS::Region" }
                 }
               }

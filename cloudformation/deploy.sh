@@ -1,6 +1,12 @@
 #!/bin/bash
 set -x
 
+# set full SG list
+instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
+aws --region "$REGION" ec2 modify-instance-attribute \
+  --instance-id "$instance_id" \
+  --groups $KIBANA_SECURITY_GROUP $EXTRA_SECURITY_GROUPS
+
 function elasticsearch_is_unreachable() {
   curl "$ELASTICSEARCH_ENDPOINT" | grep 'not authorized'
 }
@@ -42,12 +48,6 @@ EOF
   done
 fi
 
-# set full SG list
-instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
-aws --region "$REGION" ec2 modify-instance-attribute \
-  --instance-id "$instance_id" \
-  --groups $KIBANA_SECURITY_GROUP $EXTRA_SECURITY_GROUPS
-
 # sync logstash config bucket
 aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/config/"
 
@@ -66,6 +66,15 @@ Dir.glob('/opt/docker-elk/logstash/config/*.erb').each do |f|
   File.delete(f)
 end
 EOF
+
+# add hourly cron script to refresh config
+CRON_PATH=/etc/cron.hourly/refresh-logstash
+cat >"$CRON_PATH" <<EOF
+#!/bin/sh
+/usr/local/bin/cfn-init -v --region us-east-1 --stack $STACK_NAME --resource DockerElkInstance -c default
+EOF
+
+chmod +x "$CRON_PATH"
 
 # bounce docker containers
 docker-compose -f docker-compose-production.yml pull
