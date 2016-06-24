@@ -4,6 +4,7 @@ logstash:
   log_driver: syslog
   volumes:
     - ./logstash/config:/etc/logstash/conf.d
+    - /data/logstash:/var/lib/logstash
   environment:
     ELASTICSEARCH_ENDPOINT: ${ELASTICSEARCH_ENDPOINT}
   ports:

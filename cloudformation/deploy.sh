@@ -1,6 +1,10 @@
 #!/bin/bash
 set -x
 
+hostname "$STACK_NAME"
+mkdir -p /data/logstash
+chmod a+rw /data/logstash
+
 # set full SG list
 instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
 aws --region "$REGION" ec2 modify-instance-attribute \
