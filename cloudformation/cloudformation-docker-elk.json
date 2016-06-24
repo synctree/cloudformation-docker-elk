@@ -219,6 +219,11 @@
             "Statement": [
               {
                 "Effect": "Allow",
+                "Action": [ "ec2:Describe*", "ec2:ModifyInstanceAttribute" ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
                 "Action": [ "s3:Get*", "s3:List*" ],
                 "Resource": [
                   { "Fn::Join" : [ "", ["arn:aws:s3:::", { "Ref": "S3ReadableBucketPattern" } ]]},
