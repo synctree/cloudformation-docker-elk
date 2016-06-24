@@ -42,6 +42,12 @@ EOF
   done
 fi
 
+# set full SG list
+instance_id="$(curl http://169.254.169.254/latest/meta-data/instance-id)"
+aws --region "$REGION" ec2 modify-instance-attribute \
+  --instance-id "$instance_id" \
+  --groups $KIBANA_SECURITY_GROUP $EXTRA_SECURITY_GROUPS
+
 # sync logstash config bucket
 aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/config/"
 

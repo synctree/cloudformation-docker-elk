@@ -2,6 +2,7 @@
   "Parameters": {
     "InstanceType":       { "Type": "String", "Default": "t2.small" },
     "KibanaSecurityGroup":{ "Type": "String" },
+    "ExtraSecurityGroups":{ "Type": "String", "Default": "" },
     "Route53Zone":{ "Type": "String" },
     "Subdomain": { "Type": "String", "Default": "elk" },
     "ElasticsearchInstanceType":       { "Type": "String", "Default": "t2.small.elasticsearch" },
@@ -9,6 +10,8 @@
     "S3Bucket":           { "Type": "String", "Default": "my-logstash-bucket"},
     "S3ReadableBucketPattern":           { "Type": "String", "Default": "*"},
     "DatadogAPIKey":      { "Type": "String", "Default": ""},
+    "ElasticsearchVolumeSize": { "Type": "String", "Default": "10" },
+    "ElasticsearchVolumeType": { "Type": "String", "Default": "gp2"},
     "InstanceVolumeSize": { "Type": "String", "Default": "10" },
     "InstanceVolumeType": { "Type": "String", "Default": "gp2"},
     "GitRef":             { "Type": "String", "Default": "master"}
@@ -34,8 +37,8 @@
         "DomainName": { "Ref": "AWS::StackName" },
         "EBSOptions": {
           "EBSEnabled": true,
-          "VolumeType": "gp2",
-          "VolumeSize": 10
+          "VolumeType": { "Ref": "ElasticsearchVolumeType" },
+          "VolumeSize": { "Ref": "ElasticsearchVolumeSize" }
         },
         "ElasticsearchClusterConfig": {
           "InstanceType" : { "Ref": "ElasticsearchInstanceType" }
@@ -180,6 +183,8 @@
                   "&& /bin/bash ./cloudformation/deploy.sh"
                 ]]},
                 "env": {
+                  "KIBANA_SECURITY_GROUP": { "Ref": "KibanaSecurityGroup" },
+                  "EXTRA_SECURITY_GROUPS": { "Ref": "ExtraSecurityGroups" },
                   "ELASTICSEARCH_ARN": { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainArn" ] },
                   "ELASTICSEARCH_DOMAIN_NAME": { "Ref": "DockerElkElasticsearchDomain" },
                   "ELASTICSEARCH_ENDPOINT": { "Fn::Join": [ "", [ "http://", { "Fn::GetAtt" : [ "DockerElkElasticsearchDomain", "DomainEndpoint" ] }]]},
