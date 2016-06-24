@@ -51,6 +51,21 @@ aws --region "$REGION" ec2 modify-instance-attribute \
 # sync logstash config bucket
 aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/config/"
 
+# install Ruby and AWS SDK for ERB in config files
+sudo apt-get install -y ruby2.0
+gem install aws-sdk
+
+# process ERB files
+ruby <<EOF
+Dir.glob('/opt/docker-elk/logstash/config/*.erb').each do |f|
+  puts "Interpolating ERB file #{f}"
+  output_name = f.gsub('.erb', '')
+  result = ERB.new(File.read(f)).result binding
+  File.write(output_name, result)
+  File.delete(f)
+end
+EOF
+
 # bounce docker containers
 docker-compose -f docker-compose-production.yml pull
 docker-compose -f docker-compose-production.yml build
