@@ -57,6 +57,7 @@ gem install aws-sdk
 
 # process ERB files
 ruby <<EOF
+require 'erb'
 Dir.glob('/opt/docker-elk/logstash/config/*.erb').each do |f|
   puts "Interpolating ERB file #{f}"
   output_name = f.gsub('.erb', '')
