@@ -23,6 +23,7 @@
       "t2.micro": { "Arch" : "HVM64" },
       "t2.small": { "Arch" : "HVM64" },
       "m3.large": { "Arch" : "HVM64" },
+      "c4.large": { "Arch" : "HVM64" },
       "c4.4xlarge": { "Arch" : "HVM64" },
       "r3.xlarge" : { "Arch": "HVM64"}
     },
