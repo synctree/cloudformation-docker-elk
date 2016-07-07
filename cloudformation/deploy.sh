@@ -78,7 +78,15 @@ cat >"$CRON_PATH" <<EOF
 /usr/local/bin/cfn-init -v --region us-east-1 --stack $STACK_NAME --resource DockerElkInstance -c default
 EOF
 
-chmod +x "$CRON_PATH"
+# add curl helper for querying the ES instance
+cat >"/usr/local/bin/curl-es.sh" <<EOF
+#!/bin/bash
+location=$1
+shift
+/usr/bin/curl "\$@" "$ELASTICSEARCH_ENDPOINT/\$location"
+EOF
+
+chmod +x "/usr/local/bin/curl-es.sh"
 
 # bounce docker containers
 docker-compose -f docker-compose-production.yml pull
