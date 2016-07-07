@@ -5,6 +5,7 @@
     "ExtraSecurityGroups":{ "Type": "String", "Default": "" },
     "Route53Zone":{ "Type": "String" },
     "Subdomain": { "Type": "String", "Default": "elk" },
+    "ElasticsearchInstanceCount":       { "Type": "String", "Default": "1" },
     "ElasticsearchInstanceType":       { "Type": "String", "Default": "t2.small.elasticsearch" },
     "KeyName":            { "Type": "String", "Default": ""  },
     "S3Bucket":           { "Type": "String", "Default": "my-logstash-bucket"},
@@ -41,6 +42,7 @@
           "VolumeSize": { "Ref": "ElasticsearchVolumeSize" }
         },
         "ElasticsearchClusterConfig": {
+          "InstanceCount" : { "Ref": "ElasticsearchInstanceCount" },
           "InstanceType" : { "Ref": "ElasticsearchInstanceType" }
         }
       }
