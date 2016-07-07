@@ -81,7 +81,7 @@ EOF
 # add curl helper for querying the ES instance
 cat >"/usr/local/bin/curl-es.sh" <<EOF
 #!/bin/bash
-location=$1
+location=\$1
 shift
 /usr/bin/curl "\$@" "$ELASTICSEARCH_ENDPOINT/\$location"
 EOF
