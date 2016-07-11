@@ -87,6 +87,19 @@ shift
 /usr/bin/curl "\$@" "$ELASTICSEARCH_ENDPOINT/\$location"
 EOF
 
+# Optionally install datadog and ES monitoring
+if [[ -n "$DD_API_KEY" ]] ; then
+  bash -c "$(curl -L https://raw.githubusercontent.com/DataDog/dd-agent/master/packaging/datadog-agent/source/install_agent.sh)"
+
+cat >"/etc/dd-agent/conf.d/elastic.yaml" <<EOF
+init_config:
+
+instances:
+  - url: $ELASTICSEARCH_ENDPOINT
+EOF
+  /etc/init.d/datadog-agent restart
+fi
+
 chmod +x "/usr/local/bin/curl-es.sh"
 
 # bounce docker containers
