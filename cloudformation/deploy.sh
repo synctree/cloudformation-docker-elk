@@ -58,6 +58,7 @@ aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/conf
 # install Ruby and AWS SDK for ERB in config files
 sudo apt-get install -y ruby2.0
 gem install aws-sdk
+gem install bundler
 
 # process ERB files
 ruby <<EOF
