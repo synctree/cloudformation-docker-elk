@@ -53,8 +53,10 @@ EOF
   done
 fi
 
+md5_before=$(find /opt/docker-elk/logstash/config/ -type f -exec md5sum {} \; | sort -k 2 | md5sum | cut -f1 -d' ')
 # sync logstash config bucket
 aws --region "$REGION" s3 sync "s3://$S3_BUCKET/" "/opt/docker-elk/logstash/config/"
+md5_after=$(find /opt/docker-elk/logstash/config/ -type f -exec md5sum {} \; | sort -k 2 | md5sum | cut -f1 -d' ')
 
 # install Ruby and AWS SDK for ERB in config files
 sudo apt-get install -y ruby2.0
@@ -103,8 +105,12 @@ fi
 
 chmod +x "/usr/local/bin/curl-es.sh"
 
-# bounce docker containers
+# pull/build images as needed
 docker-compose -f docker-compose-production.yml pull
 docker-compose -f docker-compose-production.yml build
-docker-compose -f docker-compose-production.yml down
+
+# only stop the containers if the config was changed after sync
+if [[ "$md5_before" != "$md5_after" ]] ; then docker-compose -f docker-compose-production.yml down ; fi
+
+# ensure all containers are running
 docker-compose -f docker-compose-production.yml up -d
